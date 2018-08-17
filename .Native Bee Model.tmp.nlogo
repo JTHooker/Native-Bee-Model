@@ -13,7 +13,7 @@ to setup
   clear-all
   reset-ticks
   ask n-of 3 patches [ sprout 1 [ set breed nests set shape "box" set size 3 set color white ] ]
-  ask n-of 30 patches [ sprout 1   [ set breed bees set shape "bee" set size 3 move-to one-of nests set energy random-normal 30 2 set capacity 5 ] ]
+  ask n-of 30 patches [ sprout 1   [ set breed bees set shape "bee" set size 3 move-to one-of nests set energy random-normal 30 2 set carrying 0 set foodtarget one-of patches set color yellow ] ]
   ask n-of 20 patches [ sprout 1  [ set breed trees set shape "plant" set size 2 set color green ] ]
   ask n-of 1000 patches [ sprout 1 [ set breed pollens set shape "dot" set color yellow  move-to one-of trees fd 1 ] ]
 
@@ -21,15 +21,17 @@ end
 
 
 to go
-  ask bees [ fd speed / 50 set heading heading + random 5 - random 5  ]
-  ask bees [ set speed random-normal 1 .3  trace ]
-  ask bees [ set energy energy - .0001 ]
+  ask bees [ fd speed / 50 set heading heading + random 15 - random 15  ]
+  ask bees [ set speed random-normal .1 .3  trace ]
+  ask bees [ set energy energy - .001 ]
   ask bees [ runoutofenergy ]
   ask bees [ forage ]
   createpollen
   ask pollens [ movepollen ]
   ask pollens [ collectpollens ]
-  ask bees [ rememberlocation ]
+  ask bees [ rememberlocation forgetlocation ]
+  ask patches [ if pcolor = red and 5 > random 10000 [ set pcolor black ] ]
+  ask bees [ resetdirection ]
   tick
 end
 
@@ -43,9 +45,11 @@ to runoutofenergy
 end
 
 to forage
-  if any? pollens-here and carrying < capacity [ set carrying capacity face one-of nests set energy random-normal 30 2 ]
-  face one-of nests [fd speed ]
-  if any? nests-here set speed 0
+  if any? pollens-here and carrying = 0 [ set carrying 1 face one-of nests set energy random-normal 30 2
+  face one-of nests fd speed ]
+
+  if any? nests-here and energy > 30 [ set speed 0  ]
+  if any? nests-here and energy < 30 [ set speed 1 set carrying 0 ]
 
 end
 
@@ -67,6 +71,15 @@ end
 to rememberlocation
   if any? pollens-here [
     set foodtarget patch-here ]
+end
+
+to forgetlocation
+  if patch-here = foodtarget and not any? pollens-here [ ask patch-here [ set pcolor red ]
+    set foodtarget one-of patches ]
+end
+
+to resetdirection
+   face foodtarget
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
