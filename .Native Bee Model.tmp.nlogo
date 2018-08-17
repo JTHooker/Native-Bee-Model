@@ -12,8 +12,8 @@ to setup
   clear-all
 
   ask n-of 30 patches [ sprout 1   [ set breed bees set shape "bee" set size 3 ] ]
-  ask n-of 5 patches [ sprout 1  [ set breed trees set shape "plant" set size 2 set color green ] ]
-  ask n-of 100 patches [ sprout 1 [ set breed pollens set shape "dot" set color yellow  move-to one-of trees fd 1 ] ]
+  ask n-of 5 patches [ sprout 1  [ set breed trees set shape "plant" set size 2 ] ]
+  ask n-of 100 patches [ sprout 1 [ set breed pollens set shape "dot set color yellow move-to one-of trees ] ]
 
 end
 
