@@ -2,36 +2,78 @@ globals []
 
 
 breed [ bees bee ]
-breed [ trees tre ]
+breed [ trees tree ]
 breed [ eggs egg ]
 breed [ pollens pollen ]
+breed [ nests nest ]
 
-bees-own [ energy lifespan speed direction capacity ]
+bees-own [ energy lifespan speed direction capacity memory carrying foodtarget ]
 
 to setup
   clear-all
-
-  ask n-of 30 patches [ sprout 1   [ set breed bees set shape "bee" set size 3 ] ]
-  ask n-of 5 patches [ sprout 1  [ set breed trees set shape "plant" set size 2 set color green ] ]
-  ask n-of 100 patches [ sprout 1 [ set breed pollens set shape "dot" set color yellow  move-to one-of trees fd 1 ] ]
+  reset-ticks
+  ask n-of 3 patches [ sprout 1 [ set breed nests set shape "box" set size 3 set color white ] ]
+  ask n-of 30 patches [ sprout 1   [ set breed bees set shape "bee" set size 3 move-to one-of nests set energy random-normal 30 2 set capacity 5 ] ]
+  ask n-of 20 patches [ sprout 1  [ set breed trees set shape "plant" set size 2 set color green ] ]
+  ask n-of 1000 patches [ sprout 1 [ set breed pollens set shape "dot" set color yellow  move-to one-of trees fd 1 ] ]
 
 end
 
 
 to go
-  ask bees [ fd speed / 10 set heading heading + random 5 - random 5  ]
+  ask bees [ fd speed / 50 set heading heading + random 5 - random 5  ]
   ask bees [ set speed random-normal 1 .3  trace ]
+  ask bees [ set energy energy - .0001 ]
+  ask bees [ runoutofenergy ]
+  ask bees [ forage ]
+  createpollen
+  ask pollens [ movepollen ]
+  ask pollens [ collectpollens ]
+  ask bees [ rememberlocation ]
+  tick
 end
 
 to trace
   ifelse Track [ pen-down ] [ pen-up ]
 
 end
+
+to runoutofenergy
+  if energy < 0 [ die ]
+end
+
+to forage
+  if any? pollens-here and carrying < capacity [ set carrying capacity face one-of nests set energy random-normal 30 2
+  face one-of nests fd speed ]
+
+  if any? nests-here [ set speed 0 ]
+
+end
+
+to createpollen
+  if Growth_Rate > random 1000 [
+    ask n-of 1 trees [
+    hatch 1 [ set breed pollens set shape "dot" set color yellow  move-to one-of trees fd 1 ] ]
+  ]
+end
+
+to movepollen
+  if count pollens-here > 100 [ fd .5 ]
+end
+
+to collectpollens
+  if any? bees-here [ die ]
+end
+
+to rememberlocation
+  if any? pollens-here [
+    set foodtarget patch-here ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
+508
 10
-723
+1021
 524
 -1
 -1
@@ -99,6 +141,50 @@ Track
 1
 1
 -1000
+
+MONITOR
+130
+33
+203
+78
+Bee Count
+count bees
+0
+1
+11
+
+SLIDER
+35
+179
+199
+212
+Growth_Rate
+Growth_Rate
+0
+100
+2.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+23
+232
+223
+382
+Bee Energy Stores
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -13840069 true "" "plot mean [ energy ] of bees "
 
 @#$#@#$#@
 ## WHAT IS IT?
