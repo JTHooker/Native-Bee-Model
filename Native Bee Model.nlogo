@@ -174,7 +174,7 @@ Growth_Rate
 Growth_Rate
 0
 100
-40.0
+2.0
 1
 1
 NIL

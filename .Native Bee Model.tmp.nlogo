@@ -9,6 +9,7 @@ breed [ nests nest ]
 
 bees-own [ energy lifespan speed direction capacity memory carrying foodtarget ]
 
+
 to setup
   clear-all
   reset-ticks
@@ -21,8 +22,8 @@ end
 
 
 to go
-  ask bees [ fd speed / 50 set heading heading + random 15 - random 15  ]
-  ask bees [ set speed random-normal .1 .3  trace ]
+  ask bees [ fd speed set heading heading + random 15 - random 15  ]
+  ask bees [ set speed random-normal .05 .01  trace ]
   ask bees [ set energy energy - .001 ]
   ask bees [ runoutofenergy ]
   ask bees [ forage ]
@@ -49,7 +50,7 @@ to forage
   face one-of nests fd speed ]
 
   if any? nests-here and energy > 30 [ set speed 0  ]
-  if any? nests-here and energy < 30 [ set speed 1 set carrying 0 ]
+  if any? nests-here and energy < 30 [ set speed .05 set carrying 0 ]
 
 end
 
